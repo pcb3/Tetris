@@ -7,3 +7,53 @@
 (require 2htdp/universe)
 (require 2htdp/image)
 
+; physical constants
+(define WIDTH 10) ; # of blocks, horizontally
+(define SIZE 10) ; blocks are sqaures
+(define SCENE-SIZE (* WIDTH SIZE))
+
+; graphical constants
+(define BLOCK ; red squares with black rims
+  (overlay
+   (square (- SIZE 1) 'solid 'red)
+   (square SIZE 'outline 'black)))
+
+(define-struct tetris [block landscape])
+(define-struct block [x y])
+
+; A Tetris is a structure:
+; (make-tetris Block Landscape)
+; A Landscape is one of:
+; - '()
+; - (cons Block Landscape)
+; A Block is a structure:
+; (make-block N N)
+
+; interpretations
+; (make-block x y) depicts a block whose left
+; corner is (* x SIZE) pixels from the left
+; (* y SIZE) pixels from the top;
+; (make-tetris b0 (list b1 b2 ...)) means b0 is the
+; dropping block, while b1, b2, and ... are resting
+
+; instance of data collection
+
+; Tetris:
+(define tetris0 (make-tetris (make-block 1 1) '()))
+
+(define tetris1 (make-tetris (make-block 5 5)
+                             (cons (make-block 2 2) '())))
+
+(define tetris3 (make-tetris (make-block 3 3)
+                             (cons (make-block 4 4)
+                                   (cons (make-block 8 8)
+                                         (cons (make-block 10 10)
+                                               '())))))
+
+; Landscape
+(define landscape0 '())
+
+(define landscape1 (cons (make-block 1 1) '()))
+
+; Block
+(define block-dropping (make-block 0 3))
