@@ -243,8 +243,56 @@
  (make-tetris (make-block 0 8)
               (cons (make-block 0 9) '())))
 
-
-(define (control key tetris) tetris)
+(define (fn-control key t)
+  (cond
+    [(landed? t) ...]
+    [(string=? key "right")
+     (cond [else (if (collision? key t)
+                     ...
+                     (... (... (... (... (block-x (tetris-block t)))
+                                    (block-y (tetris-block t)))
+                               (tetris-landscape t))))])]
+    [(string=? key "left")
+     (cond [else (if (collision? key t)
+                     ...
+                     (... (... (... (... (block-x (tetris-block t)))
+                                    (block-y (tetris-block t)))
+                               (tetris-landscape t))))])]
+    [(string=? key "down")
+     (... (... (... (block-x (tetris-block t))
+                    (... (block-y (tetris-block t))))
+               (tetris-landscape t)))]
+    [else ...]))
+                                   
+(define (control key t)
+  (cond
+    [(landed? t) t]
+    [(string=? key "right")
+     (cond
+       [else
+        (if (collision? key t)
+            t
+            (tetris-render
+             (make-tetris
+              (make-block (add1 (block-x (tetris-block t)))
+                          (block-y (tetris-block t)))
+              (tetris-landscape t))))])]
+    [(string=? key "left")
+     (cond
+       [else
+        (if (collision? key t)
+            t
+            (tetris-render
+             (make-tetris
+              (make-block (sub1 (block-x (tetris-block t)))
+                          (block-y (tetris-block t)))
+              (tetris-landscape t))))])]
+    [(string=? key "down")
+     (tetris-render
+      (make-tetris (make-block (block-x (tetris-block t))
+                               (add1 (block-y (tetris-block t))))))]
+    [else t]))
+                                             
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
