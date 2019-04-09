@@ -152,7 +152,27 @@
 ; Tetris -> Boolean
 ; consumes a tetris and returns true if the block is resting on
 ; the ground or another block
-(define (landed? t) #false)
+
+(check-expect (landed? (make-tetris (make-block 0 0) '())) #false)
+
+(check-expect (landed? (make-tetris (make-block 0 9) '())) #true)
+
+(check-expect (landed? (make-tetris (make-block 0 8)
+                                    (cons (make-block 0 9) '())))
+              #true)
+
+(define (fn-landed? t)
+  (cond
+    [else (... (... (... (tetris-block t)) (tetris-landscape t))
+               ...
+               ...)]))
+
+(define (landed? t)
+  (cond
+    [else (if (member? (update-block (tetris-block t))
+                       (tetris-landscape t))
+              #true
+              #false)]))
 
 ; Tetris -> Tetris
 ; consumes a tetris and returns an new tetris with an updated block
