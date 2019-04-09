@@ -58,10 +58,10 @@
 
 ; Block
 (define block-dropping (make-block 0 3))
-(define block0 (make-block 0 0))
-(define block1 (make-block 1 1))
-(define block2 (make-block 10 10))
-(define block3 (make-block 5 5))
+(define block0 (make-block 0 0)) ; top left corner of grid
+(define block3 (make-block 9 0)) ; top right corner
+(define block1 (make-block 0 9)) ; bottom left corner
+(define block2 (make-block 9 9)) ; bottom right corner
 
 ; Number -> Number
 ; consumes a relative position and outputs coordinates in pixels
@@ -119,6 +119,21 @@
                (tetris-render
                 (make-tetris (tetris-block tetriminos)
                              (rest (tetris-landscape tetriminos)))))]))
+
+; Tetris -> Tetris
+; launches the program from some initial state s
+
+(define (tetris-main rate)
+  (big-bang (make-tetris (make-block 0 0) '())
+    ;[on-tick tock rate]
+    [to-draw tetris-render]
+    ;[on-key control]
+    ;[stop-when last-world-connected? last-picture]
+    ;[state #t]
+    [name "Tetris"]))
+
+; usage
+;(tetris-main 0.2)
 
 
 
