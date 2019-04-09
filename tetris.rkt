@@ -121,6 +121,45 @@
                              (rest (tetris-landscape tetriminos)))))]))
 
 ; Tetris -> Tetris
+; consumes a tetris and creates a new tetris each tick 
+
+; the first block
+(check-expect (tock (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 0 1) '())) 
+
+(check-expect (tock (make-tetris (make-block 0 9) '()))
+              (make-tetris (make-block 0 1)
+                           (cons (make-block 0 9) '())))
+
+(define (fn-tock tetriminos)
+  (cond
+    [(landed? tetriminos)
+     (... (... (... (... (tetris-block tetriminos)
+                         (tetris-landscape tetriminos)))))]
+    [else (... (... (... tetriminos))
+                    (tetris-landscape tetriminos))]))
+
+(define (tock tetriminos)
+  (cond
+    [(landed? tetriminos)
+     (make-tetris
+      (make-block 0 0)
+      (cons (tetris-block tetriminos)
+            (tetris-landscape tetriminos)))]
+    [else (make-tetris (update-block tetriminos)
+                       (tetris-landscape tetriminos))]))
+
+; Tetris -> Boolean
+; consumes a tetris and returns true if the block is resting on
+; the ground or another block
+(define (landed? t) #false)
+
+; Tetris -> Tetris
+; consumes a tetris and returns an new tetris with an updated block
+; position
+(define (update-block t) t)
+
+; Tetris -> Tetris
 ; launches the program from some initial state s
 
 (define (tetris-main rate)
