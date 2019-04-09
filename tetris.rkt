@@ -128,7 +128,7 @@
               (make-tetris (make-block 0 1) '())) 
 
 (check-expect (tock (make-tetris (make-block 0 9) '()))
-              (make-tetris (make-block 0 1)
+              (make-tetris (make-block 0 0)
                            (cons (make-block 0 9) '())))
 
 (define (fn-tock tetriminos)
@@ -146,8 +146,7 @@
       (make-block 0 0)
       (cons (tetris-block tetriminos)
             (tetris-landscape tetriminos)))]
-    [else (make-tetris (update-block tetriminos)
-                       (tetris-landscape tetriminos))]))
+    [else (update-block tetriminos)]))
 
 ; Tetris -> Boolean
 ; consumes a tetris and returns true if the block is resting on
@@ -163,21 +162,34 @@
 
 (define (fn-landed? t)
   (cond
-    [else (... (... (... (tetris-block t)) (tetris-landscape t))
+    [else (... (... (... (tetris-block (... t) (tetris-landscape t))))
                ...
                ...)]))
 
 (define (landed? t)
   (cond
-    [else (if (member? (update-block (tetris-block t))
+    [else (if (or (member? (tetris-block (update-block t))
                        (tetris-landscape t))
+                  (equal? (block-y (tetris-block t)) 9))
               #true
               #false)]))
 
 ; Tetris -> Tetris
 ; consumes a tetris and returns an new tetris with an updated block
 ; position
-(define (update-block t) t)
+
+(check-expect (update-block (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 0 1) '()))
+
+(define (fn-update-block t)
+  (... (... (block-x (tetris-block t))
+                           (... (block-x (tetris-block t))))
+               (tetris-landscape t)))
+
+(define (update-block t)
+  (make-tetris (make-block (block-x (tetris-block t))
+                           (add1 (block-y (tetris-block t))))
+               (tetris-landscape t)))
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
