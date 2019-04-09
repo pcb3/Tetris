@@ -95,10 +95,10 @@
 (define (fn-tetris-render tetraminos)
   (cond
     [(empty? (tetris-landscape tetraminos))
-    (... BLOCK
-     (... ... (block-x (tetris-block tetriminos)))
-     (... ... (block-y (tetris-block tetriminos)))
-     MT)]
+     (... BLOCK
+          (... ... (block-x (tetris-block tetriminos)))
+          (... ... (block-y (tetris-block tetriminos)))
+          MT)]
     [else (... BLOCK
                (... (block-x (first (tetris-landscape tetriminos))))
                (... (block-y (first (tetris-landscape tetriminos))))
@@ -109,16 +109,16 @@
 (define (tetris-render tetriminos)
   (cond
     [(empty? (tetris-landscape tetriminos))
-    (place-image BLOCK
-     (the-grid (block-x (tetris-block tetriminos)))
-     (the-grid (block-y (tetris-block tetriminos)))
-     MT)]
+     (place-image BLOCK
+                  (the-grid (block-x (tetris-block tetriminos)))
+                  (the-grid (block-y (tetris-block tetriminos)))
+                  MT)]
     [else (place-image BLOCK
-               (the-grid (block-x (first (tetris-landscape tetriminos))))
-               (the-grid (block-y (first (tetris-landscape tetriminos))))
-               (tetris-render
-                (make-tetris (tetris-block tetriminos)
-                             (rest (tetris-landscape tetriminos)))))]))
+                       (the-grid (block-x (first (tetris-landscape tetriminos))))
+                       (the-grid (block-y (first (tetris-landscape tetriminos))))
+                       (tetris-render
+                        (make-tetris (tetris-block tetriminos)
+                                     (rest (tetris-landscape tetriminos)))))]))
 
 ; Tetris -> Tetris
 ; consumes a tetris and creates a new tetris each tick 
@@ -137,7 +137,7 @@
      (... (... (... (... (tetris-block tetriminos)
                          (tetris-landscape tetriminos)))))]
     [else (... (... (... tetriminos))
-                    (tetris-landscape tetriminos))]))
+               (tetris-landscape tetriminos))]))
 
 (define (tock tetriminos)
   (cond
@@ -169,7 +169,7 @@
 (define (landed? t)
   (cond
     [else (if (or (member? (tetris-block (update-block t))
-                       (tetris-landscape t))
+                           (tetris-landscape t))
                   (equal? (block-y (tetris-block t)) 9))
               #true
               #false)]))
@@ -183,8 +183,8 @@
 
 (define (fn-update-block t)
   (... (... (block-x (tetris-block t))
-                           (... (block-x (tetris-block t))))
-               (tetris-landscape t)))
+            (... (block-x (tetris-block t))))
+       (tetris-landscape t)))
 
 (define (update-block t)
   (make-tetris (make-block (block-x (tetris-block t))
@@ -203,14 +203,46 @@
 (check-expect (control "right" (make-tetris (make-block 0 0) '()))
               (make-tetris (make-block 1 0) '()))
 
-(check-expect (control "" (make-tetris (make-block 9 0) '()))
+(check-expect (control "right" (make-tetris (make-block 9 0) '()))
               (make-tetris (make-block 9 0) '()))
+
+(check-expect
+ (control "right"
+          (make-tetris
+           (make-block 8 8)
+           (cons (make-block 9 9)
+                 (cons (make-block 9 8) '()))))
+ (make-tetris (make-block 8 8)
+              (cons (make-block 9 9)
+                    (cons (make-block 9 8) '()))))
 
 (check-expect (control "left" (make-tetris (make-block 0 0) '()))
               (make-tetris (make-block 0 0) '()))
 
-(check-expect (control "" (make-tetris (make-block 1 0) '()))
+(check-expect (control "left" (make-tetris (make-block 1 0) '()))
               (make-tetris (make-block 0 0) '()))
+
+(check-expect
+ (control "left"
+          (make-tetris
+           (make-block 8 1)
+           (cons (make-block 0 9)
+                 (cons (make-block 0 8) '()))))
+ (make-tetris (make-block 8 1)
+              (cons (make-block 0 9)
+                    (cons (make-block 0 8) '()))))
+
+(check-expect (control "down" (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 0 1) '()))
+
+(check-expect
+ (control "down"
+          (make-tetris
+           (make-block 0 8)
+           (cons (make-block 0 9) '())))
+ (make-tetris (make-block 0 8)
+              (cons (make-block 0 9) '())))
+
 
 (define (control key tetris) tetris)
 
