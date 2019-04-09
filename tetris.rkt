@@ -191,16 +191,39 @@
                            (add1 (block-y (tetris-block t))))
                (tetris-landscape t)))
 
+; Tetris Key -> Tetris
+; consumes a tetris and immediately updates the position of the
+; block depending on user input, left right and down. If the block
+; would collide with the wall or another block the state remains
+; unchanged
+
+(check-expect (control "" (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 0 0) '()))
+
+(check-expect (control "right" (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 1 0) '()))
+
+(check-expect (control "" (make-tetris (make-block 9 0) '()))
+              (make-tetris (make-block 9 0) '()))
+
+(check-expect (control "left" (make-tetris (make-block 0 0) '()))
+              (make-tetris (make-block 0 0) '()))
+
+(check-expect (control "" (make-tetris (make-block 1 0) '()))
+              (make-tetris (make-block 0 0) '()))
+
+(define (control key tetris) tetris)
+
 ; Tetris -> Tetris
 ; launches the program from some initial state s
 
 (define (tetris-main rate)
   (big-bang (make-tetris (make-block 0 0) '())
-    ;[on-tick tock rate]
+    [on-tick tock rate]
     [to-draw tetris-render]
     ;[on-key control]
-    ;[stop-when last-world-connected? last-picture]
-    ;[state #t]
+    ;[stop-when last-world? last-picture]
+    [state #t]
     [name "Tetris"]))
 
 ; usage
