@@ -63,16 +63,28 @@
 (define block2 (make-block 10 10))
 (define block3 (make-block 5 5))
 
+; Number -> Number
+; consumes a relative position and outputs coordinates in pixels
+
+(check-expect (the-grid 0) 5)
+(check-expect (the-grid 9) 95)
+
+(define (fn-the-grid position)
+  (... ... (... position ...)))
+
+(define (the-grid position)
+  (+ 5 (* position SIZE)))
+
 ; Tetris -> Image
 (check-expect (tetris-render
                (make-tetris (make-block 5 5) '()))
-              (place-image BLOCK 50 50 MT))
+              (place-image BLOCK 55 55 MT))
 
 (check-expect (tetris-render
-               (make-tetris (make-block 0.5 0.5)
-                            (cons (make-block 0.5 9.5)
-                                  (cons (make-block 1.5 9.5)
-                                        (cons (make-block 2.5 9.5)
+               (make-tetris (make-block 0 0)
+                            (cons (make-block 0 9)
+                                  (cons (make-block 1 9)
+                                        (cons (make-block 2 9)
                                               '())))))
               (place-images
                (list BLOCK BLOCK BLOCK BLOCK)
@@ -80,33 +92,33 @@
                      (make-posn 25 95))
                MT))
                
-(define (fn-tetris-render t)
+(define (fn-tetris-render tetraminos)
   (cond
-    [(empty? (tetris-landscape t))
+    [(empty? (tetris-landscape tetraminos))
     (... BLOCK
-     (... ... (block-x (tetris-block t)))
-     (... ... (block-y (tetris-block t)))
+     (... ... (block-x (tetris-block tetriminos)))
+     (... ... (block-y (tetris-block tetriminos)))
      MT)]
     [else (... BLOCK
-               (... (block-x (first (tetris-landscape t))))
-               (... (block-y (first (tetris-landscape t))))
+               (... (block-x (first (tetris-landscape tetriminos))))
+               (... (block-y (first (tetris-landscape tetriminos))))
                (fn-tetris-render
-                (make-tetris (tetris-block t)
-                             (rest (tetris-landscape t)))))]))
+                (make-tetris (tetris-block tetriminos)
+                             (rest (tetris-landscape tetriminos)))))]))
                              
-(define (tetris-render t)
+(define (tetris-render tetriminos)
   (cond
-    [(empty? (tetris-landscape t))
+    [(empty? (tetris-landscape tetriminos))
     (place-image BLOCK
-     (* 10 (block-x (tetris-block t)))
-     (* 10 (block-y (tetris-block t)))
+     (the-grid (block-x (tetris-block tetriminos)))
+     (the-grid (block-y (tetris-block tetriminos)))
      MT)]
     [else (place-image BLOCK
-               (* 10 (block-x (first (tetris-landscape t))))
-               (* 10 (block-y (first (tetris-landscape t))))
+               (the-grid (block-x (first (tetris-landscape tetriminos))))
+               (the-grid (block-y (first (tetris-landscape tetriminos))))
                (tetris-render
-                (make-tetris (tetris-block t)
-                             (rest (tetris-landscape t)))))]))
+                (make-tetris (tetris-block tetriminos)
+                             (rest (tetris-landscape tetriminos)))))]))
 
 
 
