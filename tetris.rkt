@@ -11,6 +11,7 @@
 (define WIDTH 10) ; # of blocks, horizontally
 (define SIZE 10) ; blocks are sqaures
 (define SCENE-SIZE (* WIDTH SIZE))
+(define GO-MSG (text "GAME OVER" 10 "black"))
 
 ; graphical constants
 (define BLOCK ; red squares with black rims
@@ -389,6 +390,20 @@
            (make-tetris (make-block (block-x (tetris-block t))
                                     (block-y (tetris-block t)))
                         (rest (tetris-landscape t))))]))
+
+; Tetris -> Image
+; consumes a tetris and outputs the final screen
+
+(check-expect (last-picture
+               (make-tetris (make-block 0 0) '()))
+              (place-image GO-MSG (/ WIDTH 2) (/ SIZE 3)
+                           (place-image BLOCK 0 0 MT)))
+
+(define (fn-last-picture t)
+  (... ... ... ... (tetris-render t)))
+
+(define (last-picture t)
+  (place-image GO-MSG (/ WIDTH 2) (/ SIZE 3) (tetris-render t)))
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
