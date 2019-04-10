@@ -170,7 +170,7 @@
   (cond
     [else (if (or (member? (tetris-block (update-block t))
                            (tetris-landscape t))
-                  (equal? (block-y (tetris-block t)) 9))
+                  (equal? (block-y (tetris-block t)) (- SIZE 1)))
               #true
               #false)]))
 
@@ -191,59 +191,56 @@
                            (add1 (block-y (tetris-block t))))
                (tetris-landscape t)))
 
-; Tetris Key -> Tetris
+; Tetris Key -> Tetris Image
 ; consumes a tetris and immediately updates the position of the
 ; block depending on user input, left right and down. If the block
 ; would collide with the wall or another block the state remains
 ; unchanged
 
-(check-expect (control "" (make-tetris (make-block 0 0) '()))
+(check-expect (control (make-tetris (make-block 0 0) '()) "")
               (make-tetris (make-block 0 0) '()))
 
-(check-expect (control "right" (make-tetris (make-block 0 0) '()))
-              (make-tetris (make-block 1 0) '()))
+(check-expect (control (make-tetris (make-block 0 0) '()) "right")
+              (place-image BLOCK (the-grid 1) (the-grid 0) MT))
 
-(check-expect (control "right" (make-tetris (make-block 9 0) '()))
+(check-expect (control (make-tetris (make-block 9 0) '()) "right")
               (make-tetris (make-block 9 0) '()))
 
 (check-expect
- (control "right"
-          (make-tetris
+ (control (make-tetris
            (make-block 8 8)
            (cons (make-block 9 9)
-                 (cons (make-block 9 8) '()))))
+                 (cons (make-block 9 8) '()))) "right")
  (make-tetris (make-block 8 8)
               (cons (make-block 9 9)
                     (cons (make-block 9 8) '()))))
 
-(check-expect (control "left" (make-tetris (make-block 0 0) '()))
+(check-expect (control (make-tetris (make-block 0 0) '()) "left")
               (make-tetris (make-block 0 0) '()))
 
-(check-expect (control "left" (make-tetris (make-block 1 0) '()))
-              (make-tetris (make-block 0 0) '()))
+(check-expect (control (make-tetris (make-block 1 0) '()) "left")
+              (place-image BLOCK (the-grid 0) (the-grid 0) MT))
 
 (check-expect
- (control "left"
-          (make-tetris
-           (make-block 8 1)
+ (control (make-tetris
+           (make-block 1 8)
            (cons (make-block 0 9)
-                 (cons (make-block 0 8) '()))))
- (make-tetris (make-block 8 1)
+                 (cons (make-block 0 8) '()))) "left")
+ (make-tetris (make-block 1 8)
               (cons (make-block 0 9)
                     (cons (make-block 0 8) '()))))
 
-(check-expect (control "down" (make-tetris (make-block 0 0) '()))
-              (make-tetris (make-block 0 1) '()))
+(check-expect (control (make-tetris (make-block 0 0) '())  "down")
+              (place-image BLOCK (the-grid 0) (the-grid 1) MT))
 
 (check-expect
- (control "down"
-          (make-tetris
+ (control (make-tetris
            (make-block 0 8)
-           (cons (make-block 0 9) '())))
+           (cons (make-block 0 9) '())) "down")
  (make-tetris (make-block 0 8)
               (cons (make-block 0 9) '())))
 
-(define (fn-control key t)
+(define (fn-control t key)
   (cond
     [(landed? t) ...]
     [(string=? key "right")
@@ -264,7 +261,7 @@
                (tetris-landscape t)))]
     [else ...]))
                                    
-(define (control key t)
+(define (control t key)
   (cond
     [(landed? t) t]
     [(string=? key "right")
@@ -327,40 +324,39 @@
                (make-tetris (make-block 5 5) '()) "left")
               #false)
 
-;(define (fn-collision? t key)
-;  (cond
-;    [(or (and (equal? key "right")
-;          (equal? (block-x (tetris-block t)) 9))
-;         (member? (make-tetris (make-block
-;                                (add1 (block-x (tetris-block t)))
-;                                (block-y (tetris-block t))))
-;                  (tetris-landscape t)))
-;     #true]
-;    [(or (and (equal? key "left")
-;          (equal? (block-x (tetris-block t)) 0))
-;         (member? (make-tetris (make-block
-;                                (sub1 (block-x (tetris-block t)))
-;                                (block-y (tetris-block t))))
-;                  (tetris-landscape t)))
-;     #true]
-;    [else #false]))
+(define (fn-collision? t key)
+  (cond
+    [(or (and (equal? key "right")
+          (equal? (block-x (tetris-block t)) (...)))
+         (member? (make-block
+                                (... (block-x (tetris-block t)))
+                                (block-y (tetris-block t))))
+                  (tetris-landscape t))
+     ...]
+    [(or (and (equal? key "left")
+          (equal? (block-x (tetris-block t)) 0))
+         (member? (make-block
+                                (...(block-x (tetris-block t)))
+                                (block-y (tetris-block t))))
+                  (tetris-landscape t))
+     ...]
+    [else ...]))
 
 (define (collision? t key)
   (cond
     [(or (and (equal? key "right")
-              (equal? (block-x (tetris-block t)) 9))
-         (member? (make-tetris (make-block
+              (equal? (block-x (tetris-block t)) (- WIDTH 1)))
+         (member?
+          (make-block
                                 (add1 (block-x (tetris-block t)))
-                                (block-y (tetris-block t)))
-                               (tetris-landscape t))
+                                (block-y (tetris-block t)))                  
                   (tetris-landscape t)))
      #true]
     [(or (and (equal? key "left")
               (equal? (block-x (tetris-block t)) 0))
-         (member? (make-tetris (make-block
+         (member? (make-block
                                 (sub1 (block-x (tetris-block t)))
                                 (block-y (tetris-block t)))
-                               (tetris-landscape t))
                   (tetris-landscape t)))
      #true]
     [else #false]))
@@ -372,7 +368,7 @@
   (big-bang (make-tetris (make-block 0 0) '())
     [on-tick tock rate]
     [to-draw tetris-render]
-    ;[on-key control]
+    [on-key control]
     ;[stop-when last-world? last-picture]
     [state #t]
     [name "Tetris"]))
