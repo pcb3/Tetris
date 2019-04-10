@@ -270,7 +270,7 @@
     [(string=? key "right")
      (cond
        [else
-        (if (collision? key t)
+        (if (collision? t key)
             t
             (tetris-render
              (make-tetris
@@ -280,7 +280,7 @@
     [(string=? key "left")
      (cond
        [else
-        (if (collision? key t)
+        (if (collision? t key)
             t
             (tetris-render
              (make-tetris
@@ -290,9 +290,80 @@
     [(string=? key "down")
      (tetris-render
       (make-tetris (make-block (block-x (tetris-block t))
-                               (add1 (block-y (tetris-block t))))))]
+                               (add1 (block-y (tetris-block t))))
+                   (tetris-landscape t)))]
     [else t]))
                                              
+
+; Tetris Key -> Boolean
+; consumes a tetris and a key and returns true if there would be a
+; collision after resolving the key press
+
+(check-expect (collision?
+               (make-tetris (make-block 9 0) '()) "right")
+              #true)
+
+(check-expect (collision?
+               (make-tetris (make-block 8 8)
+                            (cons (make-block 9 9)
+                                  (cons (make-block 9 8) '()))) "right")
+              #true)
+
+(check-expect (collision?
+               (make-tetris (make-block 5 5) '()) "right")
+              #false)
+
+(check-expect (collision?
+               (make-tetris (make-block 0 0) '()) "left")
+              #true)
+
+(check-expect (collision?
+               (make-tetris (make-block 1 8)
+                            (cons (make-block 0 9)
+                                  (cons (make-block 0 8) '()))) "left")
+              #true)
+
+(check-expect (collision?
+               (make-tetris (make-block 5 5) '()) "left")
+              #false)
+
+;(define (fn-collision? t key)
+;  (cond
+;    [(or (and (equal? key "right")
+;          (equal? (block-x (tetris-block t)) 9))
+;         (member? (make-tetris (make-block
+;                                (add1 (block-x (tetris-block t)))
+;                                (block-y (tetris-block t))))
+;                  (tetris-landscape t)))
+;     #true]
+;    [(or (and (equal? key "left")
+;          (equal? (block-x (tetris-block t)) 0))
+;         (member? (make-tetris (make-block
+;                                (sub1 (block-x (tetris-block t)))
+;                                (block-y (tetris-block t))))
+;                  (tetris-landscape t)))
+;     #true]
+;    [else #false]))
+
+(define (collision? t key)
+  (cond
+    [(or (and (equal? key "right")
+              (equal? (block-x (tetris-block t)) 9))
+         (member? (make-tetris (make-block
+                                (add1 (block-x (tetris-block t)))
+                                (block-y (tetris-block t)))
+                               (tetris-landscape t))
+                  (tetris-landscape t)))
+     #true]
+    [(or (and (equal? key "left")
+              (equal? (block-x (tetris-block t)) 0))
+         (member? (make-tetris (make-block
+                                (sub1 (block-x (tetris-block t)))
+                                (block-y (tetris-block t)))
+                               (tetris-landscape t))
+                  (tetris-landscape t)))
+     #true]
+    [else #false]))
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
