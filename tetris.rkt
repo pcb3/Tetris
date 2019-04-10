@@ -74,7 +74,7 @@
   (... ... (... position ...)))
 
 (define (the-grid position)
-  (+ 5 (* position SIZE)))
+  (+ (/ SIZE 2) (* position SIZE)))
 
 ; Tetris -> Image
 (check-expect (tetris-render
@@ -396,14 +396,16 @@
 
 (check-expect (last-picture
                (make-tetris (make-block 0 0) '()))
-              (place-image GO-MSG (/ WIDTH 2) (/ SIZE 3)
-                           (place-image BLOCK 0 0 MT)))
+              (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 3)
+                           (place-image BLOCK
+                                        (the-grid 0)
+                                        (the-grid 0) MT)))
 
 (define (fn-last-picture t)
   (... ... ... ... (tetris-render t)))
 
 (define (last-picture t)
-  (place-image GO-MSG (/ WIDTH 2) (/ SIZE 3) (tetris-render t)))
+  (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 3) (tetris-render t)))
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
@@ -413,7 +415,7 @@
     [on-tick tock rate]
     [to-draw tetris-render]
     [on-key control]
-    ;[stop-when last-world? last-picture]
+    [stop-when last-world? last-picture]
     [state #t]
     [name "Tetris"]))
 
