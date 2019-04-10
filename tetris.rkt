@@ -358,6 +358,38 @@
      #true]
     [else #false]))
 
+; Tetris -> Boolean
+; returns true if the conditions are met to end the program
+
+(check-expect (last-world? (make-tetris (make-block 0 0) '())) #false)
+
+(check-expect (last-world?
+               (make-tetris
+                (make-block 0 0)
+                (list (make-block 0 9) (make-block 0 8) (make-block 0 7)
+                      (make-block 0 6) (make-block 0 5) (make-block 0 4)
+                      (make-block 0 3) (make-block 0 2) (make-block 0 1)
+                      (make-block 0 0))))
+              #true)
+
+(define (fn-last-world? t)
+  (cond
+    [(empty? (tetris-landscape t)) ...]
+    [(zero? (block-y (... (tetris-landscape t)))) ...]
+    [else (fn-last-world?
+           (... (... (block-x (tetris-block t))
+                                    (block-y (tetris-block t)))
+                        (rest (tetris-landscape t))))]))
+     
+(define (last-world? t)
+  (cond
+    [(empty? (tetris-landscape t)) #false]
+    [(zero? (block-y (first (tetris-landscape t)))) #true]
+    [else (last-world?
+           (make-tetris (make-block (block-x (tetris-block t))
+                                    (block-y (tetris-block t)))
+                        (rest (tetris-landscape t))))]))
+
 ; Tetris -> Tetris
 ; launches the program from some initial state s
 
