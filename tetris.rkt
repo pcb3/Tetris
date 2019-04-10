@@ -201,7 +201,7 @@
               (make-tetris (make-block 0 0) '()))
 
 (check-expect (control (make-tetris (make-block 0 0) '()) "right")
-              (place-image BLOCK (the-grid 1) (the-grid 0) MT))
+              (make-tetris (make-block 1 0) '()))
 
 (check-expect (control (make-tetris (make-block 9 0) '()) "right")
               (make-tetris (make-block 9 0) '()))
@@ -219,7 +219,7 @@
               (make-tetris (make-block 0 0) '()))
 
 (check-expect (control (make-tetris (make-block 1 0) '()) "left")
-              (place-image BLOCK (the-grid 0) (the-grid 0) MT))
+              (make-tetris (make-block 0 0) '()))
 
 (check-expect
  (control (make-tetris
@@ -231,7 +231,7 @@
                     (cons (make-block 0 8) '()))))
 
 (check-expect (control (make-tetris (make-block 0 0) '())  "down")
-              (place-image BLOCK (the-grid 0) (the-grid 1) MT))
+              (make-tetris (make-block 0 1) '()))
 
 (check-expect
  (control (make-tetris
@@ -246,19 +246,19 @@
     [(string=? key "right")
      (cond [else (if (collision? key t)
                      ...
-                     (... (... (... (... (block-x (tetris-block t)))
+                     (... (... (... (block-x (tetris-block t)))
                                     (block-y (tetris-block t)))
-                               (tetris-landscape t))))])]
+                               (tetris-landscape t)))])]
     [(string=? key "left")
      (cond [else (if (collision? key t)
                      ...
-                     (... (... (... (... (block-x (tetris-block t)))
+                     (... (... (... (block-x (tetris-block t)))
                                     (block-y (tetris-block t)))
-                               (tetris-landscape t))))])]
+                               (tetris-landscape t)))])]
     [(string=? key "down")
-     (... (... (... (block-x (tetris-block t))
+     (... (... (block-x (tetris-block t))
                     (... (block-y (tetris-block t))))
-               (tetris-landscape t)))]
+               (tetris-landscape t))]
     [else ...]))
                                    
 (define (control t key)
@@ -269,26 +269,23 @@
        [else
         (if (collision? t key)
             t
-            (tetris-render
              (make-tetris
               (make-block (add1 (block-x (tetris-block t)))
                           (block-y (tetris-block t)))
-              (tetris-landscape t))))])]
+              (tetris-landscape t)))])]
     [(string=? key "left")
      (cond
        [else
         (if (collision? t key)
             t
-            (tetris-render
              (make-tetris
               (make-block (sub1 (block-x (tetris-block t)))
                           (block-y (tetris-block t)))
-              (tetris-landscape t))))])]
+              (tetris-landscape t)))])]
     [(string=? key "down")
-     (tetris-render
       (make-tetris (make-block (block-x (tetris-block t))
                                (add1 (block-y (tetris-block t))))
-                   (tetris-landscape t)))]
+                   (tetris-landscape t))]
     [else t]))
                                              
 
