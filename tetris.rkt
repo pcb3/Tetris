@@ -8,10 +8,11 @@
 (require 2htdp/image)
 
 ; physical constants
-(define WIDTH 10) ; # of blocks, horizontally
-(define SIZE 10) ; blocks are sqaures
+(define SCALE 2)
+(define WIDTH (* SCALE 10)) ; # of blocks, horizontally
+(define SIZE (* SCALE 10)) ; blocks are sqaures
 (define SCENE-SIZE (* WIDTH SIZE))
-(define GO-MSG (text "GAME OVER" 10 "black"))
+(define GO-MSG (text "GAME OVER" SIZE "black"))
 
 ; graphical constants
 (define BLOCK ; red squares with black rims
@@ -20,6 +21,20 @@
    (square SIZE 'outline 'black)))
 (define MT (empty-scene SCENE-SIZE SCENE-SIZE))
 
+; Tetris -> Image
+; consumes a tetris and extracts the number of blocks in the list.
+; appends the score message to the length of that list.
+
+(define (landscape-length t)
+  (number->string (length (tetris-landscape t))))
+
+; String String -> Image
+; consumes two strings and outputs a text image
+(define (length-msg t)
+  (text (string-append "YOUR SCORE IS " (landscape-length t))
+        SIZE "black"))
+
+; structures
 (define-struct tetris [block landscape])
 (define-struct block [x y])
 
@@ -129,7 +144,7 @@
               (make-tetris (make-block 0 1) '())) 
 
 (check-expect (tock (make-tetris (make-block 0 9) '()))
-              (make-tetris (make-block 0 0)
+              (make-tetris (make-block 5 0)
                            (cons (make-block 0 9) '())))
 
 (define (fn-tock tetriminos)
@@ -144,7 +159,7 @@
   (cond
     [(landed? tetriminos)
      (make-tetris
-      (make-block 0 0)
+      (make-block (/ WIDTH 2) 0)
       (cons (tetris-block tetriminos)
             (tetris-landscape tetriminos)))]
     [else (update-block tetriminos)]))
@@ -171,7 +186,8 @@
   (cond
     [else (if (or (member? (tetris-block (update-block t))
                            (tetris-landscape t))
-                  (equal? (block-y (tetris-block t)) (- SIZE 1)))
+                  (equal? (block-y (tetris-block t))
+                          (/ (- SCENE-SIZE SIZE) SIZE)))
               #true
               #false)]))
 
@@ -248,18 +264,18 @@
      (cond [else (if (collision? key t)
                      ...
                      (... (... (... (block-x (tetris-block t)))
-                                    (block-y (tetris-block t)))
-                               (tetris-landscape t)))])]
+                               (block-y (tetris-block t)))
+                          (tetris-landscape t)))])]
     [(string=? key "left")
      (cond [else (if (collision? key t)
                      ...
                      (... (... (... (block-x (tetris-block t)))
-                                    (block-y (tetris-block t)))
-                               (tetris-landscape t)))])]
+                               (block-y (tetris-block t)))
+                          (tetris-landscape t)))])]
     [(string=? key "down")
      (... (... (block-x (tetris-block t))
-                    (... (block-y (tetris-block t))))
-               (tetris-landscape t))]
+               (... (block-y (tetris-block t))))
+          (tetris-landscape t))]
     [else ...]))
                                    
 (define (control t key)
@@ -270,23 +286,23 @@
        [else
         (if (collision? t key)
             t
-             (make-tetris
-              (make-block (add1 (block-x (tetris-block t)))
-                          (block-y (tetris-block t)))
-              (tetris-landscape t)))])]
+            (make-tetris
+             (make-block (add1 (block-x (tetris-block t)))
+                         (block-y (tetris-block t)))
+             (tetris-landscape t)))])]
     [(string=? key "left")
      (cond
        [else
         (if (collision? t key)
             t
-             (make-tetris
-              (make-block (sub1 (block-x (tetris-block t)))
-                          (block-y (tetris-block t)))
-              (tetris-landscape t)))])]
+            (make-tetris
+             (make-block (sub1 (block-x (tetris-block t)))
+                         (block-y (tetris-block t)))
+             (tetris-landscape t)))])]
     [(string=? key "down")
-      (make-tetris (make-block (block-x (tetris-block t))
-                               (add1 (block-y (tetris-block t))))
-                   (tetris-landscape t))]
+     (make-tetris (make-block (block-x (tetris-block t))
+                              (add1 (block-y (tetris-block t))))
+                  (tetris-landscape t))]
     [else t]))
                                              
 
@@ -325,18 +341,18 @@
 (define (fn-collision? t key)
   (cond
     [(or (and (equal? key "right")
-          (equal? (block-x (tetris-block t)) (...)))
+              (equal? (block-x (tetris-block t)) (...)))
          (member? (make-block
-                                (... (block-x (tetris-block t)))
-                                (block-y (tetris-block t))))
-                  (tetris-landscape t))
+                   (... (block-x (tetris-block t)))
+                   (block-y (tetris-block t))))
+         (tetris-landscape t))
      ...]
     [(or (and (equal? key "left")
-          (equal? (block-x (tetris-block t)) 0))
+              (equal? (block-x (tetris-block t)) 0))
          (member? (make-block
-                                (...(block-x (tetris-block t)))
-                                (block-y (tetris-block t))))
-                  (tetris-landscape t))
+                   (...(block-x (tetris-block t)))
+                   (block-y (tetris-block t))))
+         (tetris-landscape t))
      ...]
     [else ...]))
 
@@ -346,15 +362,15 @@
               (equal? (block-x (tetris-block t)) (- WIDTH 1)))
          (member?
           (make-block
-                                (add1 (block-x (tetris-block t)))
-                                (block-y (tetris-block t)))                  
-                  (tetris-landscape t)))
+           (add1 (block-x (tetris-block t)))
+           (block-y (tetris-block t)))                  
+          (tetris-landscape t)))
      #true]
     [(or (and (equal? key "left")
               (equal? (block-x (tetris-block t)) 0))
          (member? (make-block
-                                (sub1 (block-x (tetris-block t)))
-                                (block-y (tetris-block t)))
+                   (sub1 (block-x (tetris-block t)))
+                   (block-y (tetris-block t)))
                   (tetris-landscape t)))
      #true]
     [else #false]))
@@ -379,8 +395,8 @@
     [(zero? (block-y (... (tetris-landscape t)))) ...]
     [else (fn-last-world?
            (... (... (block-x (tetris-block t))
-                                    (block-y (tetris-block t)))
-                        (rest (tetris-landscape t))))]))
+                     (block-y (tetris-block t)))
+                (rest (tetris-landscape t))))]))
      
 (define (last-world? t)
   (cond
@@ -397,21 +413,26 @@
 (check-expect (last-picture
                (make-tetris (make-block 0 0) '()))
               (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 3)
-                           (place-image BLOCK
-                                        (the-grid 0)
-                                        (the-grid 0) MT)))
+                           (place-image
+                            (text "YOUR SCORE IS 0" SIZE "black")
+                            (/ SCENE-SIZE 2) (/ SCENE-SIZE 2)
+                            (place-image BLOCK
+                                         (the-grid 0)
+                                         (the-grid 0) MT))))
 
 (define (fn-last-picture t)
   (... ... ... ... (tetris-render t)))
 
 (define (last-picture t)
-  (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 3) (tetris-render t)))
+  (place-image GO-MSG (/ SCENE-SIZE 2) (/ SCENE-SIZE 3)
+               (place-image (length-msg t)
+                            (/ SCENE-SIZE 2) (/ SCENE-SIZE 2) (tetris-render t))))
 
 ; Tetris -> Tetris
 ; launches the program from some initial state s
 
 (define (tetris-main rate)
-  (big-bang (make-tetris (make-block 0 0) '())
+  (big-bang (make-tetris (make-block (/ WIDTH 2) 0) '())
     [on-tick tock rate]
     [to-draw tetris-render]
     [on-key control]
