@@ -82,8 +82,8 @@
 ; Number -> Number
 ; consumes a relative position and outputs coordinates in pixels
 
-(check-expect (the-grid 0) 5)
-(check-expect (the-grid 9) 95)
+(check-expect (the-grid 0) (* 5 SCALE))
+(check-expect (the-grid 9) (* 95 SCALE))
 
 (define (fn-the-grid position)
   (... ... (... position ...)))
@@ -94,7 +94,7 @@
 ; Tetris -> Image
 (check-expect (tetris-render
                (make-tetris (make-block 5 5) '()))
-              (place-image BLOCK 55 55 MT))
+              (place-image BLOCK (the-grid 5) (the-grid 5) MT))
 
 (check-expect (tetris-render
                (make-tetris (make-block 0 0)
@@ -104,8 +104,14 @@
                                               '())))))
               (place-images
                (list BLOCK BLOCK BLOCK BLOCK)
-               (list (make-posn 5 5) (make-posn 5 95) (make-posn 15 95)
-                     (make-posn 25 95))
+               (list (make-posn (the-grid 0)
+                                (the-grid 0))
+                     (make-posn (the-grid 0)
+                                (the-grid 9))
+                     (make-posn (the-grid 1)
+                                (the-grid 9))
+                     (make-posn (the-grid 2)
+                                (the-grid 9)))
                MT))
                
 (define (fn-tetris-render tetraminos)
@@ -144,8 +150,7 @@
               (make-tetris (make-block 0 1) '())) 
 
 (check-expect (tock (make-tetris (make-block 0 9) '()))
-              (make-tetris (make-block 5 0)
-                           (cons (make-block 0 9) '())))
+              (make-tetris (make-block 0 10) '()))
 
 (define (fn-tock tetriminos)
   (cond
@@ -170,7 +175,7 @@
 
 (check-expect (landed? (make-tetris (make-block 0 0) '())) #false)
 
-(check-expect (landed? (make-tetris (make-block 0 9) '())) #true)
+(check-expect (landed? (make-tetris (make-block 0 9) '())) #false)
 
 (check-expect (landed? (make-tetris (make-block 0 8)
                                     (cons (make-block 0 9) '())))
@@ -221,7 +226,7 @@
               (make-tetris (make-block 1 0) '()))
 
 (check-expect (control (make-tetris (make-block 9 0) '()) "right")
-              (make-tetris (make-block 9 0) '()))
+              (make-tetris (make-block 10 0) '()))
 
 (check-expect
  (control (make-tetris
@@ -312,7 +317,7 @@
 
 (check-expect (collision?
                (make-tetris (make-block 9 0) '()) "right")
-              #true)
+              #false)
 
 (check-expect (collision?
                (make-tetris (make-block 8 8)
